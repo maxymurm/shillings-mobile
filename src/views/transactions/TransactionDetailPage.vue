@@ -16,19 +16,28 @@
             <ion-card-subtitle>{{ transaction.post_date }}</ion-card-subtitle>
           </ion-card-header>
           <ion-card-content>
-            <ion-list>
-              <ion-item v-for="split in transaction.splits" :key="split.id">
-                <ion-label>
-                  <h3>{{ split.account?.name ?? 'Account #' + split.account_id }}</h3>
-                  <p>{{ split.memo }}</p>
-                </ion-label>
-                <ion-note slot="end" :color="split.amount_num >= 0 ? 'success' : 'danger'">
-                  {{ formatAmount(split.amount_num) }}
-                </ion-note>
-              </ion-item>
-            </ion-list>
+            <p v-if="transaction.notes">{{ transaction.notes }}</p>
+            <p v-if="transaction.reference">Ref: {{ transaction.reference }}</p>
+            <ion-chip :color="transaction.is_posted ? 'success' : 'warning'">
+              {{ transaction.is_posted ? 'Posted' : 'Draft' }}
+            </ion-chip>
           </ion-card-content>
         </ion-card>
+
+        <ion-list-header>
+          <ion-label>Splits</ion-label>
+        </ion-list-header>
+        <ion-list>
+          <ion-item v-for="split in transaction.splits" :key="split.id"
+            :router-link="`/tabs/accounts/${split.account_id}`">
+            <ion-label>
+              <h3>{{ split.account?.name ?? 'Account #' + split.account_id }}</h3>
+              <p>{{ split.action }} {{ split.memo ? '— ' + split.memo : '' }}</p>
+            </ion-label>
+            <SplitAmount slot="end" :amount-num="split.amount_num" :amount-denom="split.amount_denom"
+              :action="split.action" />
+          </ion-item>
+        </ion-list>
       </div>
       <ion-text v-else color="medium" class="ion-text-center">
         <p>Loading...</p>
@@ -43,18 +52,14 @@ import { useRoute } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
-  IonList, IonItem, IonLabel, IonNote, IonText,
+  IonList, IonListHeader, IonItem, IonLabel, IonText, IonChip,
 } from '@ionic/vue';
 import api from '@/services/api';
-import { formatCurrency } from '@/utils/money';
+import SplitAmount from '@/components/SplitAmount.vue';
 import type { Transaction } from '@/types';
 
 const route = useRoute();
 const transaction = ref<Transaction | null>(null);
-
-function formatAmount(num: number): string {
-  return formatCurrency(num, 100);
-}
 
 onMounted(async () => {
   try {
