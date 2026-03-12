@@ -26,6 +26,22 @@
         </ion-item>
 
         <ion-list-header>
+          <ion-label>Notifications</ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-label>Transaction Reminders</ion-label>
+          <ion-toggle slot="end" :checked="notifReminders" @ionChange="togglePref('pref_notifications_reminders', $event)" />
+        </ion-item>
+        <ion-item>
+          <ion-label>Sync Notifications</ion-label>
+          <ion-toggle slot="end" :checked="notifSync" @ionChange="togglePref('pref_notifications_sync', $event)" />
+        </ion-item>
+        <ion-item>
+          <ion-label>Low Balance Alerts</ion-label>
+          <ion-toggle slot="end" :checked="notifAlerts" @ionChange="togglePref('pref_notifications_alerts', $event)" />
+        </ion-item>
+
+        <ion-list-header>
           <ion-label>App</ion-label>
         </ion-list-header>
         <ion-item>
@@ -42,20 +58,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonListHeader,
-  IonItem, IonLabel, IonNote, IonButton, IonIcon,
+  IonItem, IonLabel, IonNote, IonButton, IonIcon, IonToggle,
 } from '@ionic/vue';
 import { checkmarkCircle } from 'ionicons/icons';
 import { useAuthStore } from '@/stores/auth';
+import { getNotificationPref, setNotificationPref, type NotificationPrefKey } from '@/services/pushNotifications';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 const companies = computed(() => authStore.companies);
 const selectedCompanyId = computed(() => authStore.selectedCompanyId);
+
+const notifReminders = ref(true);
+const notifSync = ref(true);
+const notifAlerts = ref(true);
+
+onMounted(async () => {
+  notifReminders.value = await getNotificationPref('pref_notifications_reminders');
+  notifSync.value = await getNotificationPref('pref_notifications_sync');
+  notifAlerts.value = await getNotificationPref('pref_notifications_alerts');
+});
+
+async function togglePref(key: NotificationPrefKey, event: CustomEvent) {
+  const enabled = event.detail.checked;
+  await setNotificationPref(key, enabled);
+  if (key === 'pref_notifications_reminders') notifReminders.value = enabled;
+  if (key === 'pref_notifications_sync') notifSync.value = enabled;
+  if (key === 'pref_notifications_alerts') notifAlerts.value = enabled;
+}
 
 async function switchCompany(id: number) {
   await authStore.selectCompany(id);

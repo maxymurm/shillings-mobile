@@ -22,6 +22,7 @@ import './theme/variables.css';
 import { setupDarkMode } from './services/darkmode';
 import { configureStatusBar } from './services/statusbar';
 import { setupAutoSync } from './offline/sync';
+import { registerPushNotifications, setupNotificationChannels, onPushNotificationTap } from './services/pushNotifications';
 
 setupDarkMode();
 
@@ -34,4 +35,10 @@ router.isReady().then(() => {
   app.mount('#app');
   configureStatusBar();
   setupAutoSync();
+  setupNotificationChannels();
+  registerPushNotifications();
+  onPushNotificationTap((data) => {
+    if (data.route) router.push(data.route);
+    else if (data.transaction_id) router.push(`/tabs/transactions/${data.transaction_id}`);
+  });
 });
