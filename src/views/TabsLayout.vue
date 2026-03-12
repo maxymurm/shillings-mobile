@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+    <SyncBar />
     <ion-tabs>
       <ion-router-outlet />
       <ion-tab-bar slot="bottom">
@@ -32,6 +33,7 @@ import {
   IonPage, IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonLabel,
 } from '@ionic/vue';
 import { homeOutline, walletOutline, addCircle, peopleOutline, ellipsisHorizontalOutline } from 'ionicons/icons';
+import SyncBar from '@/components/SyncBar.vue';
 </script>
 
 <style scoped>

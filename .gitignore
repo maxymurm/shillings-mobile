@@ -13,4 +13,6 @@ android/local.properties
 
 # Directory junctions (local only, recreate with: agents/setup-junctions.ps1)
 parent_shillings/
-src/offline/
+
+# Scaffold JS files replaced by TypeScript
+src/offline/*.js

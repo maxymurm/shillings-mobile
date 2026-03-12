@@ -21,6 +21,7 @@ import './theme/variables.css';
 
 import { setupDarkMode } from './services/darkmode';
 import { configureStatusBar } from './services/statusbar';
+import { setupAutoSync } from './offline/sync';
 
 setupDarkMode();
 
@@ -32,4 +33,5 @@ const app = createApp(App)
 router.isReady().then(() => {
   app.mount('#app');
   configureStatusBar();
+  setupAutoSync();
 });
