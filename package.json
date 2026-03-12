@@ -14,6 +14,7 @@
     "lint": "eslint . --ext .vue,.js,.ts --fix"
   },
   "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "^10.0.0",
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/camera": "^6.0.0",
@@ -26,6 +27,7 @@
     "@capacitor/network": "^6.0.0",
     "@capacitor/preferences": "^6.0.0",
     "@capacitor/push-notifications": "^6.0.0",
+    "@capacitor/share": "^6.0.4",
     "@capacitor/splash-screen": "^6.0.0",
     "@capacitor/status-bar": "^6.0.0",
     "@ionic/vue": "^8.0.0",
