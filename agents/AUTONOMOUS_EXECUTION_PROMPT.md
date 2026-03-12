@@ -59,7 +59,7 @@ src/offline/       → c:\Users\maxmm\Herd\shillings\resources\js\offline
 - Mobile: `https://github.com/maxymurm/shillings-mobile` (branch: `main`)
 - Backend: `https://github.com/maxymurm/shillings` (branch: `develop`)
 
-**Project Board:** https://github.com/users/maxymurm/projects/5 (Shillings Mobile Dev Board)
+**Project Board:** https://github.com/users/maxymurm/projects/9 (Shillings Mobile Dev Board)
 
 ---
 
