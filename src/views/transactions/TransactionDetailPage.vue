@@ -6,6 +6,11 @@
           <ion-back-button default-href="/tabs/transactions" />
         </ion-buttons>
         <ion-title>Transaction</ion-title>
+        <ion-buttons slot="end">
+          <ion-button :router-link="`/tabs/transactions/${$route.params.id}/edit`">
+            <ion-icon slot="icon-only" :icon="createOutline" />
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
@@ -50,10 +55,11 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonButton, IonIcon,
   IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
   IonList, IonListHeader, IonItem, IonLabel, IonText, IonChip,
 } from '@ionic/vue';
+import { createOutline } from 'ionicons/icons';
 import api from '@/services/api';
 import SplitAmount from '@/components/SplitAmount.vue';
 import type { Transaction } from '@/types';
