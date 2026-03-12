@@ -10,3 +10,7 @@ android/build/
 android/local.properties
 .capacitor/
 *.log
+
+# Directory junctions (local only, recreate with: agents/setup-junctions.ps1)
+parent_shillings/
+src/offline/
