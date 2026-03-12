@@ -16,6 +16,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', redirect: '/tabs/dashboard' },
       { path: 'dashboard', component: () => import('@/views/home/DashboardPage.vue') },
       { path: 'accounts', component: () => import('@/views/accounts/AccountListPage.vue') },
+      { path: 'accounts/create', component: () => import('@/views/accounts/AccountCreatePage.vue') },
       { path: 'accounts/:id', component: () => import('@/views/accounts/AccountDetailPage.vue') },
       { path: 'transactions', component: () => import('@/views/transactions/TransactionListPage.vue') },
       { path: 'transactions/create', component: () => import('@/views/transactions/TransactionCreatePage.vue') },

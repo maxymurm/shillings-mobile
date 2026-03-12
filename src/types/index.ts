@@ -66,6 +66,7 @@ export interface Split {
   memo: string | null;
   reconcile_state: 'n' | 'c' | 'y';
   account?: Account;
+  transaction?: Transaction;
 }
 
 export interface Contact {
