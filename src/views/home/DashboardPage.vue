@@ -3,6 +3,7 @@
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Shillings</ion-title>
+        <OfflineBadge slot="end" style="margin-inline-end: 12px" />
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
@@ -81,6 +82,7 @@ import {
 import { useAuthStore } from '@/stores/auth';
 import { formatCurrency } from '@/utils/money';
 import api from '@/services/api';
+import OfflineBadge from '@/components/OfflineBadge.vue';
 import type { DashboardSummary } from '@/types';
 
 const authStore = useAuthStore();

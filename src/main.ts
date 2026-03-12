@@ -19,9 +19,17 @@ import '@ionic/vue/css/padding.css';
 /* Theme */
 import './theme/variables.css';
 
+import { setupDarkMode } from './services/darkmode';
+import { configureStatusBar } from './services/statusbar';
+
+setupDarkMode();
+
 const app = createApp(App)
   .use(IonicVue)
   .use(createPinia())
   .use(router);
 
-router.isReady().then(() => app.mount('#app'));
+router.isReady().then(() => {
+  app.mount('#app');
+  configureStatusBar();
+});
