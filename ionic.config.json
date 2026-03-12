@@ -1,0 +1,7 @@
+{
+  "name": "shillings-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
