@@ -18,7 +18,7 @@
         </ion-item>
 
         <ion-list-header>
-          <ion-label>Company</ion-label>
+          <ion-label>Organisation</ion-label>
         </ion-list-header>
         <ion-item v-for="company in companies" :key="company.id" button @click="switchCompany(company.id)">
           <ion-label>{{ company.name }}</ion-label>

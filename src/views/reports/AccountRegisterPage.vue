@@ -3,57 +3,73 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button default-href="/tabs/reports" />
+          <ion-back-button v-if="selectedAccountId" @click.prevent="clearSelection" default-href="/tabs/reports" />
+          <ion-back-button v-else default-href="/tabs/reports" />
         </ion-buttons>
-        <ion-title>Account Register</ion-title>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-item lines="none">
-          <ion-label position="stacked">Select Account</ion-label>
-          <ion-select v-model="selectedAccountId" interface="popover" placeholder="Choose account..." @ionChange="load(true)">
-            <ion-select-option v-for="acct in accounts" :key="acct.id" :value="acct.id">
-              {{ acct.code }} — {{ acct.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
+        <ion-title>{{ selectedAccountId ? selectedAccountName : 'Account Register' }}</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <div v-if="!selectedAccountId" class="ion-text-center ion-padding">
-        <p>Select an account to view its register</p>
+      <!-- Account listing (landing view) -->
+      <div v-if="!selectedAccountId">
+        <div v-if="!accounts.length" class="ion-text-center ion-padding">
+          <ion-spinner />
+        </div>
+        <div v-else>
+          <div v-for="group in accountsByType" :key="group.type">
+            <ion-list-header>
+              <ion-label color="medium">{{ group.type }}</ion-label>
+            </ion-list-header>
+            <ion-list>
+              <ion-item v-for="acct in group.accounts" :key="acct.id" button @click="selectAccount(acct.id)">
+                <ion-label>
+                  <h3>{{ acct.code }} — {{ acct.name }}</h3>
+                </ion-label>
+                <ion-note slot="end">{{ formatAccountBalance(acct) }}</ion-note>
+              </ion-item>
+            </ion-list>
+          </div>
+        </div>
       </div>
-      <div v-else-if="loading && !entries.length" class="ion-text-center ion-padding">
-        <ion-spinner />
-      </div>
-      <div v-else>
-        <ion-list>
-          <ion-item v-for="entry in entries" :key="entry.id">
-            <ion-label>
-              <h3>{{ entry.description }}</h3>
-              <p>{{ entry.date }}</p>
-            </ion-label>
-            <div slot="end" class="register-amounts">
-              <span :class="entry.action === 'DEBIT' ? 'debit' : 'credit'">
-                {{ formatAmount(entry) }}
-              </span>
-              <span class="balance">{{ formatBalance(entry) }}</span>
-            </div>
-          </ion-item>
-        </ion-list>
 
-        <ion-infinite-scroll @ionInfinite="loadMore" :disabled="!hasMore">
-          <ion-infinite-scroll-content />
-        </ion-infinite-scroll>
+      <!-- Register detail view -->
+      <div v-else>
+        <div v-if="loading && !entries.length" class="ion-text-center ion-padding">
+          <ion-spinner />
+        </div>
+        <div v-else-if="!entries.length" class="ion-text-center ion-padding">
+          <p>No transactions for this account</p>
+        </div>
+        <div v-else>
+          <ion-list>
+            <ion-item v-for="entry in entries" :key="entry.id">
+              <ion-label>
+                <h3>{{ entry.description }}</h3>
+                <p>{{ entry.date }}</p>
+              </ion-label>
+              <div slot="end" class="register-amounts">
+                <span :class="entry.action === 'DEBIT' ? 'debit' : 'credit'">
+                  {{ formatAmount(entry) }}
+                </span>
+                <span class="balance">{{ formatBalance(entry) }}</span>
+              </div>
+            </ion-item>
+          </ion-list>
+
+          <ion-infinite-scroll @ionInfinite="loadMore" :disabled="!hasMore">
+            <ion-infinite-scroll-content />
+          </ion-infinite-scroll>
+        </div>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
-  IonItem, IonLabel, IonSelect, IonSelectOption, IonList, IonSpinner,
+  IonItem, IonLabel, IonNote, IonList, IonListHeader, IonSpinner,
   IonInfiniteScroll, IonInfiniteScrollContent,
 } from '@ionic/vue';
 import { useAccountsStore } from '@/stores/accounts';
@@ -62,12 +78,17 @@ import { toDecimal, formatCurrency } from '@/utils/money';
 import { storeToRefs } from 'pinia';
 
 const accountsStore = useAccountsStore();
-const { accounts } = storeToRefs(accountsStore);
+const { accounts, accountsByType } = storeToRefs(accountsStore);
 const selectedAccountId = ref<number | null>(null);
 const entries = ref<AccountRegisterEntry[]>([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const page = ref(1);
+
+const selectedAccountName = computed(() => {
+  const acct = accounts.value.find(a => a.id === selectedAccountId.value);
+  return acct ? `${acct.code} — ${acct.name}` : 'Account Register';
+});
 
 function formatAmount(entry: AccountRegisterEntry): string {
   return formatCurrency(toDecimal(entry.amount_num, entry.amount_denom));
@@ -75,6 +96,23 @@ function formatAmount(entry: AccountRegisterEntry): string {
 
 function formatBalance(entry: AccountRegisterEntry): string {
   return formatCurrency(toDecimal(entry.balance_num, entry.balance_denom));
+}
+
+function formatAccountBalance(acct: { balance_num?: number; balance_denom?: number }): string {
+  if (acct.balance_num == null || acct.balance_denom == null) return '—';
+  return formatCurrency(toDecimal(acct.balance_num, acct.balance_denom));
+}
+
+function selectAccount(id: number) {
+  selectedAccountId.value = id;
+  load(true);
+}
+
+function clearSelection() {
+  selectedAccountId.value = null;
+  entries.value = [];
+  page.value = 1;
+  hasMore.value = true;
 }
 
 async function load(reset = false) {

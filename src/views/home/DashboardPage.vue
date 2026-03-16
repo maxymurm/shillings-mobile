@@ -3,6 +3,7 @@
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Shillings</ion-title>
+        <OrgSwitcher slot="end" />
         <OfflineBadge slot="end" style="margin-inline-end: 12px" />
       </ion-toolbar>
     </ion-header>
@@ -83,6 +84,7 @@ import { useAuthStore } from '@/stores/auth';
 import { formatCurrency } from '@/utils/money';
 import api from '@/services/api';
 import OfflineBadge from '@/components/OfflineBadge.vue';
+import OrgSwitcher from '@/components/OrgSwitcher.vue';
 import type { DashboardSummary } from '@/types';
 
 const authStore = useAuthStore();
