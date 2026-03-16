@@ -46,6 +46,10 @@
             <ion-icon slot="start" :icon="fingerPrintOutline" />
             Use Face ID / Fingerprint
           </ion-button>
+
+          <ion-text v-if="biometricError" color="danger" class="ion-text-center ion-margin-top">
+            <p>{{ biometricError }}</p>
+          </ion-text>
         </form>
       </div>
     </ion-content>
@@ -56,12 +60,13 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  IonPage, IonContent, IonItem, IonInput, IonButton, IonIcon, IonSpinner,
+  IonPage, IonContent, IonItem, IonInput, IonButton, IonIcon, IonSpinner, IonText,
   toastController,
 } from '@ionic/vue';
 import { walletOutline, fingerPrintOutline } from 'ionicons/icons';
 import { useAuthStore } from '@/stores/auth';
-import { isBiometricAvailable } from '@/services/biometric';
+import { isBiometricAvailable, authenticateWithBiometric } from '@/services/biometric';
+import { Preferences } from '@capacitor/preferences';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -69,6 +74,7 @@ const email = ref('');
 const password = ref('');
 const loading = ref(false);
 const biometricAvailable = ref(isBiometricAvailable());
+const biometricError = ref<string | null>(null);
 
 async function handleLogin() {
   loading.value = true;
@@ -88,7 +94,24 @@ async function handleLogin() {
 }
 
 async function loginWithBiometric() {
-  // Implemented in Phase 11
+  biometricError.value = null;
+  try {
+    const verified = await authenticateWithBiometric();
+    if (!verified) return;
+
+    const { value: savedToken } = await Preferences.get({ key: 'auth_token' });
+    if (!savedToken) {
+      biometricError.value = 'No saved session. Please log in with your password first.';
+      return;
+    }
+
+    await authStore.init();
+    if (authStore.isAuthenticated) {
+      router.replace('/tabs/dashboard');
+    }
+  } catch (e: any) {
+    biometricError.value = e.message ?? 'Biometric authentication failed';
+  }
 }
 </script>
 

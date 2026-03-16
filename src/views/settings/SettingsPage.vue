@@ -29,6 +29,10 @@
           <ion-label>Notifications</ion-label>
         </ion-list-header>
         <ion-item>
+          <ion-label>Unlock with Biometrics</ion-label>
+          <ion-toggle slot="end" :checked="biometricEnabled" @ionChange="toggleBiometric($event)" />
+        </ion-item>
+        <ion-item>
           <ion-label>Transaction Reminders</ion-label>
           <ion-toggle slot="end" :checked="notifReminders" @ionChange="togglePref('pref_notifications_reminders', $event)" />
         </ion-item>
@@ -67,6 +71,7 @@ import {
 import { checkmarkCircle } from 'ionicons/icons';
 import { useAuthStore } from '@/stores/auth';
 import { getNotificationPref, setNotificationPref, type NotificationPrefKey } from '@/services/pushNotifications';
+import { isBiometricEnabled, setBiometricEnabled } from '@/services/biometric';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -77,12 +82,20 @@ const selectedCompanyId = computed(() => authStore.selectedCompanyId);
 const notifReminders = ref(true);
 const notifSync = ref(true);
 const notifAlerts = ref(true);
+const biometricEnabled = ref(false);
 
 onMounted(async () => {
   notifReminders.value = await getNotificationPref('pref_notifications_reminders');
   notifSync.value = await getNotificationPref('pref_notifications_sync');
   notifAlerts.value = await getNotificationPref('pref_notifications_alerts');
+  biometricEnabled.value = await isBiometricEnabled();
 });
+
+async function toggleBiometric(event: CustomEvent) {
+  const enabled = event.detail.checked;
+  await setBiometricEnabled(enabled);
+  biometricEnabled.value = enabled;
+}
 
 async function togglePref(key: NotificationPrefKey, event: CustomEvent) {
   const enabled = event.detail.checked;

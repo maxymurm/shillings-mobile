@@ -1,6 +1,7 @@
 <template>
   <ion-page>
     <SyncBar />
+    <ConflictModal :is-open="hasConflicts" @close="hasConflicts && undefined" />
     <ion-tabs>
       <ion-router-outlet />
       <ion-tab-bar slot="bottom">
@@ -34,6 +35,12 @@ import {
 } from '@ionic/vue';
 import { homeOutline, walletOutline, addCircle, peopleOutline, ellipsisHorizontalOutline } from 'ionicons/icons';
 import SyncBar from '@/components/SyncBar.vue';
+import ConflictModal from '@/components/ConflictModal.vue';
+import { useSyncStore } from '@/stores/sync';
+import { storeToRefs } from 'pinia';
+
+const syncStore = useSyncStore();
+const { hasConflicts } = storeToRefs(syncStore);
 </script>
 
 <style scoped>

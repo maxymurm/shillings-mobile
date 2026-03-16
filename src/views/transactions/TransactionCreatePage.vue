@@ -25,6 +25,26 @@
 
         <SplitEditor v-model="splits" />
 
+        <ion-item-group>
+          <ion-item-divider><ion-label>Receipt (optional)</ion-label></ion-item-divider>
+          <ion-item v-if="receiptPreview">
+            <ion-thumbnail slot="start">
+              <img :src="receiptPreview" alt="Receipt" />
+            </ion-thumbnail>
+            <ion-button fill="clear" color="danger" slot="end" @click="receiptPreview = null; receiptData = null">
+              Remove
+            </ion-button>
+          </ion-item>
+          <ion-item v-else>
+            <ion-button fill="outline" size="small" @click="takePhoto">
+              <ion-icon :icon="cameraOutline" slot="start" /> Camera
+            </ion-button>
+            <ion-button fill="outline" size="small" @click="choosePhoto" style="margin-left: 8px">
+              <ion-icon :icon="imageOutline" slot="start" /> Gallery
+            </ion-button>
+          </ion-item>
+        </ion-item-group>
+
         <ion-button expand="block" type="submit" :disabled="loading || !canSubmit" class="ion-margin-top">
           {{ loading ? 'Saving...' : 'Save Transaction' }}
         </ion-button>
@@ -38,10 +58,13 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
-  IonItem, IonInput, IonTextarea, IonButton, toastController,
+  IonItem, IonInput, IonTextarea, IonButton, IonItemGroup, IonItemDivider,
+  IonLabel, IonThumbnail, IonIcon, toastController,
 } from '@ionic/vue';
+import { cameraOutline, imageOutline } from 'ionicons/icons';
 import SplitEditor from '@/components/SplitEditor.vue';
 import type { SplitEntry } from '@/components/SplitEditor.vue';
+import { captureReceipt, pickFromGallery } from '@/services/camera';
 import api from '@/services/api';
 
 const router = useRouter();
@@ -57,6 +80,19 @@ const splits = ref<SplitEntry[]>([
   { account_id: null, accountName: '', action: 'DEBIT' as const, amount_num: 0, amount_denom: 100, memo: '' },
   { account_id: null, accountName: '', action: 'CREDIT' as const, amount_num: 0, amount_denom: 100, memo: '' },
 ]);
+
+const receiptPreview = ref<string | null>(null);
+const receiptData = ref<string | null>(null);
+
+async function takePhoto() {
+  const base64 = await captureReceipt();
+  if (base64) { receiptData.value = base64; receiptPreview.value = `data:image/jpeg;base64,${base64}`; }
+}
+
+async function choosePhoto() {
+  const base64 = await pickFromGallery();
+  if (base64) { receiptData.value = base64; receiptPreview.value = `data:image/jpeg;base64,${base64}`; }
+}
 
 const totalDebits = computed(() =>
   splits.value.filter((s) => s.action === 'DEBIT').reduce((sum, s) => sum + s.amount_num, 0),
@@ -75,6 +111,7 @@ async function handleSubmit() {
   try {
     await api.post('/transactions', {
       ...form.value,
+      receipt_image: receiptData.value || undefined,
       splits: splits.value.map((s) => ({
         account_id: s.account_id,
         action: s.action,

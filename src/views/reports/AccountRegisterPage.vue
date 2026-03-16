@@ -34,6 +34,31 @@
 
       <!-- Register detail view -->
       <div v-else>
+        <ion-toolbar>
+          <ion-searchbar
+            v-model="searchQuery"
+            placeholder="Search transactions..."
+            :debounce="400"
+            @ionInput="load(true)"
+          />
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-item lines="none">
+            <ion-label>From</ion-label>
+            <ion-datetime-button datetime="start-dt" slot="end" />
+            <ion-modal :keep-contents-mounted="true">
+              <ion-datetime id="start-dt" presentation="date" v-model="startDate" @ionChange="load(true)" />
+            </ion-modal>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>To</ion-label>
+            <ion-datetime-button datetime="end-dt" slot="end" />
+            <ion-modal :keep-contents-mounted="true">
+              <ion-datetime id="end-dt" presentation="date" v-model="endDate" @ionChange="load(true)" />
+            </ion-modal>
+          </ion-item>
+        </ion-toolbar>
+
         <div v-if="loading && !entries.length" class="ion-text-center ion-padding">
           <ion-spinner />
         </div>
@@ -71,6 +96,7 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonItem, IonLabel, IonNote, IonList, IonListHeader, IonSpinner,
   IonInfiniteScroll, IonInfiniteScrollContent,
+  IonSearchbar, IonDatetimeButton, IonDatetime, IonModal,
 } from '@ionic/vue';
 import { useAccountsStore } from '@/stores/accounts';
 import { fetchAccountRegister, type AccountRegisterEntry } from '@/services/reports';
@@ -84,6 +110,9 @@ const entries = ref<AccountRegisterEntry[]>([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const page = ref(1);
+const searchQuery = ref('');
+const startDate = ref<string | undefined>(undefined);
+const endDate = ref<string | undefined>(undefined);
 
 const selectedAccountName = computed(() => {
   const acct = accounts.value.find(a => a.id === selectedAccountId.value);
@@ -126,7 +155,11 @@ async function load(reset = false) {
 
   loading.value = true;
   try {
-    const data = await fetchAccountRegister(selectedAccountId.value, page.value);
+    const data = await fetchAccountRegister(selectedAccountId.value, page.value, {
+      search: searchQuery.value || undefined,
+      start_date: startDate.value?.split('T')[0] || undefined,
+      end_date: endDate.value?.split('T')[0] || undefined,
+    });
     entries.value.push(...data);
     hasMore.value = data.length >= 15;
     page.value++;

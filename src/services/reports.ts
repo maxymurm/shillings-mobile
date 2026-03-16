@@ -57,7 +57,13 @@ export async function fetchTrialBalance(): Promise<TrialBalanceRow[]> {
   return response.data.data ?? response.data;
 }
 
-export async function fetchAccountRegister(accountId: number, page = 1): Promise<AccountRegisterEntry[]> {
-  const response = await api.get(`/accounts/${accountId}/transactions`, { params: { page } });
+export async function fetchAccountRegister(
+  accountId: number,
+  page = 1,
+  filters: { search?: string; start_date?: string; end_date?: string } = {},
+): Promise<AccountRegisterEntry[]> {
+  const response = await api.get(`/accounts/${accountId}/transactions`, {
+    params: { page, ...filters },
+  });
   return response.data.data ?? response.data;
 }
