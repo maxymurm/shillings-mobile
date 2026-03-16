@@ -27,9 +27,12 @@ export const useAuthStore = defineStore('auth', () => {
       const { value: savedCompanyId } = await Preferences.get({ key: 'selected_company_id' });
       if (savedCompanyId) selectedCompanyId.value = parseInt(savedCompanyId, 10);
       try {
-        await fetchUser();
+        const timeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Init timeout')), 5000),
+        );
+        await Promise.race([fetchUser(), timeout]);
       } catch {
-        // offline — use cached data
+        // offline or timeout — use cached data
       }
     }
   }
