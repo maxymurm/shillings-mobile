@@ -89,4 +89,24 @@ describe('Conflict Resolution', () => {
     expect(diff.extra.local).toBeUndefined();
     expect(diff.extra.server).toBe('field');
   });
+
+  it('LOCAL_WINS strategy takes local values for all fields', () => {
+    const conflict = makeConflict({
+      local_data: { name: 'Local V1', balance: 100 },
+      server_data: { name: 'Server V2', balance: 200 },
+    });
+    const result = resolveConflict(conflict, 'LOCAL_WINS');
+    expect(result.resolved_data).toEqual({ name: 'Local V1', balance: 100 });
+    expect(result.resolved_data).not.toEqual(conflict.server_data);
+  });
+
+  it('MANUAL strategy defaults to server data without user choice', () => {
+    const conflict = makeConflict({
+      local_data: { name: 'Manual Local' },
+      server_data: { name: 'Manual Server' },
+    });
+    const result = resolveConflict(conflict, 'MANUAL');
+    expect(result.strategy).toBe('MANUAL');
+    expect(result.resolved_data).toEqual(conflict.server_data);
+  });
 });

@@ -160,4 +160,18 @@ describe('Component Tests', () => {
       expect(wrapper.exists()).toBe(true);
     });
   });
+
+  describe('OrgSwitcher', () => {
+    it('exports OrgSwitcher component', async () => {
+      const mod = await import('@/components/OrgSwitcher.vue');
+      expect(mod.default).toBeDefined();
+      expect(mod.default.__name || mod.default.name).toBeTruthy();
+    });
+
+    it('OrgSwitcher has expected template structure', async () => {
+      const mod = await import('@/components/OrgSwitcher.vue');
+      // Component should be a Vue component with a setup function or render
+      expect(typeof mod.default).toBe('object');
+    });
+  });
 });

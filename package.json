@@ -8,6 +8,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:e2e": "cypress run",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "build:ios": "npx cap build ios",
     "build:android": "npx cap build android",
     "sync": "npx cap sync",

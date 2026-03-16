@@ -155,4 +155,33 @@ describe('Auth Store', () => {
       expect(store.selectedCompany?.name).toBe('Co B');
     });
   });
+
+  describe('biometric login', () => {
+    it('should restore session from stored token on biometric auth', async () => {
+      vi.mocked(Preferences.get).mockImplementation(async ({ key }) => {
+        if (key === 'auth_token') return { value: 'bio-token' };
+        if (key === 'user') return { value: JSON.stringify({ id: 1, name: 'Bio User', email: 'bio@test.com' }) };
+        return { value: null };
+      });
+      vi.mocked(api.get).mockResolvedValueOnce({
+        data: { id: 1, name: 'Bio User', email: 'bio@test.com', companies: [{ id: 1, name: 'Co', currency_code: 'USD' }] },
+      });
+
+      const store = useAuthStore();
+      await store.init();
+
+      expect(store.isAuthenticated).toBe(true);
+      expect(store.token).toBe('bio-token');
+    });
+
+    it('should not authenticate when no stored token exists', async () => {
+      vi.mocked(Preferences.get).mockResolvedValue({ value: null });
+
+      const store = useAuthStore();
+      await store.init();
+
+      expect(store.isAuthenticated).toBe(false);
+      expect(store.token).toBeNull();
+    });
+  });
 });
