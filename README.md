@@ -32,6 +32,13 @@ Herd/shillings/                  ← Laravel backend (API source of truth)
 **GitHub (backend):** https://github.com/maxymurm/shillings  
 **GitHub (mobile):** https://github.com/maxymurm/shillings-mobile
 
+## Cross-Platform Documentation
+
+The Shillings ecosystem spans three platforms. For integrated development guidance:
+
+- **[ECOSYSTEM.md](../Herd/shillings/docs/ECOSYSTEM.md)** (backend repo) — Architecture, shared code, API contracts, development workflow
+- **[FEATURE_PARITY_MATRIX.md](../Herd/shillings/docs/FEATURE_PARITY_MATRIX.md)** (backend repo) — Feature comparison across Web, PWA, and Mobile
+
 ## Project Status
 
 | Phase | Status | Description |
