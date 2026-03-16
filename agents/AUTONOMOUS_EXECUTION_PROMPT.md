@@ -1,7 +1,7 @@
 # Autonomous Execution Prompt — Shillings Mobile (Ionic/Capacitor)
 
-**Version:** 1.0  
-**Date:** March 12, 2026  
+**Version:** 1.1  
+**Date:** March 16, 2026  
 **Mode:** YOLO / Full Autonomous — Bypass ALL manual prompts  
 **Project:** Shillings Mobile (Ionic/Vue/Capacitor) on branch `main`
 
@@ -17,6 +17,12 @@ Then also read:
 1. agents/memory.instructions.md (if exists)
 2. README.md
 3. parent_shillings/.github/copilot-instructions.md
+
+STANDING RULE — PARALLEL PARITY (effective 2026-03-16):
+Every feature, fix, or change applied to this mobile project MUST be simultaneously
+applied to the backend/web project at c:\Users\maxmm\Herd\shillings (or identified
+as explicitly platform-specific). Issues must be created for BOTH project boards.
+Commits must be paired across both repos in every session.
 
 Start from the lowest-numbered open Phase. YOLO mode — no user input required.
 Commit and push after every phase. Close GitHub issues as you complete them.
@@ -35,8 +41,17 @@ Go.
 - ✅ Run npm/ionic/npx commands
 - ✅ Make ALL architectural decisions independently
 - ✅ Bypass ALL prompts — prefill values automatically
+- ✅ **Apply parallel changes to `c:\Users\maxmm\Herd\shillings` (web/backend) for every feature**
+- ✅ **Create paired GitHub issues on BOTH project boards for every task**
 - ❌ Do NOT stop for user confirmation
-- ❌ Do NOT modify parent_shillings/ (read-only reference)
+- ❌ Do NOT modify parent_shillings/ source PHP code (read-only reference for API contracts)
+
+### 🔁 Parallel Parity Rule (MANDATORY)
+This project and the backend (`shillings`) must always stay in sync.
+For every change here, ask: *Does the web app need the same change?*
+If yes → implement it in the backend too, in the same session, with a paired commit.
+Exceptions (mobile-only): biometrics, native camera, push via APNs/FCM, haptics, app stores.
+Exceptions (web-only): Filament admin CRUD, OFX/CSV import, tax/advanced report setup, PDF generation.
 
 ---
 

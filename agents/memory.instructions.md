@@ -4,6 +4,21 @@
 
 ---
 
+## 🔁 PARALLEL PARITY RULE — MANDATORY (Effective 2026-03-16)
+
+**Every change in this project MUST have a corresponding change in the backend/web project in the same session.**
+- Features, bug fixes, terminology changes, docs → apply to both projects
+- GitHub issues scoped for one project → create equivalent issues for the other
+- Autonomous prompts MUST include tasks for both projects
+- Commits must be paired: one in `shillings-mobile/main`, one in `shillings/develop`
+- Exception: platform-specific features (biometrics, native camera on mobile; Filament admin, file import on web) are exempt but must be noted
+
+**Backend + Web project:** `c:\Users\maxmm\Herd\shillings` | `develop` branch | https://github.com/maxymurm/shillings
+
+---
+
+---
+
 ## Project Identity
 - **Repo:** https://github.com/maxymurm/shillings-mobile
 - **Local:** `c:\Users\maxmm\shillings-mobile`
@@ -87,4 +102,4 @@ GET  /api/reports/summary      → net worth, income, expenses
 ```
 
 ---
-*Last Updated: Phase 0 (scaffold created, pre-implementation)*
+*Last Updated: 2026-03-16 — Parallel Parity Rule established. Org switcher (OrgSwitcher.vue), dashboard integration, and enhanced Account Register (landing view + drill-down) implemented. All 15 phases complete.*
