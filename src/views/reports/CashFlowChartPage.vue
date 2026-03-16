@@ -13,6 +13,24 @@
         <ion-refresher-content />
       </ion-refresher>
 
+      <!-- Filter bar -->
+      <ion-toolbar>
+        <ion-select
+          v-model="datePreset"
+          placeholder="Date Range"
+          interface="popover"
+          @ionChange="load"
+        >
+          <ion-select-option value="">All Time</ion-select-option>
+          <ion-select-option value="this_month">This Month</ion-select-option>
+          <ion-select-option value="last_month">Last Month</ion-select-option>
+          <ion-select-option value="this_quarter">This Quarter</ion-select-option>
+          <ion-select-option value="last_quarter">Last Quarter</ion-select-option>
+          <ion-select-option value="ytd">Year to Date</ion-select-option>
+          <ion-select-option value="last_year">Last Year</ion-select-option>
+        </ion-select>
+      </ion-toolbar>
+
       <div v-if="loading" class="ion-text-center ion-padding">
         <ion-spinner />
       </div>
@@ -32,7 +50,7 @@
 import { ref, computed, onMounted } from 'vue';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
-  IonSpinner, IonRefresher, IonRefresherContent,
+  IonSpinner, IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
 } from '@ionic/vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from 'chart.js';
@@ -42,6 +60,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip,
 
 const loading = ref(false);
 const data = ref<CashFlowData | null>(null);
+const datePreset = ref('');
 
 const chartData = computed(() => ({
   labels: data.value?.periods ?? [],
@@ -63,7 +82,11 @@ const chartOptions = {
 
 async function load() {
   loading.value = true;
-  try { data.value = await fetchCashFlow(); }
+  try {
+    data.value = await fetchCashFlow({
+      date_preset: datePreset.value || undefined,
+    });
+  }
   catch { /* offline */ }
   finally { loading.value = false; }
 }

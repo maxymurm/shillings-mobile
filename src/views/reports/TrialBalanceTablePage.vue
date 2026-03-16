@@ -13,6 +13,16 @@
         <ion-refresher-content />
       </ion-refresher>
 
+      <!-- Filter bar -->
+      <ion-toolbar>
+        <ion-searchbar
+          v-model="searchQuery"
+          placeholder="Search accounts..."
+          :debounce="400"
+          @ionInput="load"
+        />
+      </ion-toolbar>
+
       <div v-if="loading" class="ion-text-center ion-padding">
         <ion-spinner />
       </div>
@@ -47,20 +57,25 @@
 import { ref, computed, onMounted } from 'vue';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
-  IonSpinner, IonRefresher, IonRefresherContent,
+  IonSpinner, IonRefresher, IonRefresherContent, IonSearchbar,
 } from '@ionic/vue';
 import { fetchTrialBalance, type TrialBalanceRow } from '@/services/reports';
 import { formatCurrency } from '@/utils/money';
 
 const loading = ref(false);
 const rows = ref<TrialBalanceRow[]>([]);
+const searchQuery = ref('');
 
 const totalDebit = computed(() => rows.value.reduce((sum, r) => sum + r.debit, 0));
 const totalCredit = computed(() => rows.value.reduce((sum, r) => sum + r.credit, 0));
 
 async function load() {
   loading.value = true;
-  try { rows.value = await fetchTrialBalance(); }
+  try {
+    rows.value = await fetchTrialBalance({
+      search: searchQuery.value || undefined,
+    });
+  }
   catch { /* offline */ }
   finally { loading.value = false; }
 }

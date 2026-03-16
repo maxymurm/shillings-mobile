@@ -37,23 +37,31 @@ export interface AccountRegisterEntry {
   balance_denom: number;
 }
 
-export async function fetchBalanceSheet(): Promise<BalanceSheetData> {
-  const response = await api.get('/reports/balance-sheet');
+export interface ReportFilters {
+  search?: string;
+  date_preset?: string;
+  start_date?: string;
+  end_date?: string;
+  as_of_date?: string;
+}
+
+export async function fetchBalanceSheet(filters: ReportFilters = {}): Promise<BalanceSheetData> {
+  const response = await api.get('/reports/balance-sheet', { params: filters });
   return response.data.data ?? response.data;
 }
 
-export async function fetchIncomeStatement(): Promise<IncomeStatementData> {
-  const response = await api.get('/reports/income-statement');
+export async function fetchIncomeStatement(filters: ReportFilters = {}): Promise<IncomeStatementData> {
+  const response = await api.get('/reports/income-statement', { params: filters });
   return response.data.data ?? response.data;
 }
 
-export async function fetchCashFlow(): Promise<CashFlowData> {
-  const response = await api.get('/reports/cash-flow');
+export async function fetchCashFlow(filters: ReportFilters = {}): Promise<CashFlowData> {
+  const response = await api.get('/reports/cash-flow', { params: filters });
   return response.data.data ?? response.data;
 }
 
-export async function fetchTrialBalance(): Promise<TrialBalanceRow[]> {
-  const response = await api.get('/reports/trial-balance');
+export async function fetchTrialBalance(filters: ReportFilters = {}): Promise<TrialBalanceRow[]> {
+  const response = await api.get('/reports/trial-balance', { params: filters });
   return response.data.data ?? response.data;
 }
 

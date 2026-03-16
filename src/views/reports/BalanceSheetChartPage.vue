@@ -13,6 +13,16 @@
         <ion-refresher-content />
       </ion-refresher>
 
+      <!-- Filter bar -->
+      <ion-toolbar>
+        <ion-searchbar
+          v-model="searchQuery"
+          placeholder="Search accounts..."
+          :debounce="400"
+          @ionInput="load"
+        />
+      </ion-toolbar>
+
       <div v-if="loading" class="ion-text-center ion-padding">
         <ion-spinner />
       </div>
@@ -47,6 +57,7 @@ import { ref, computed, onMounted } from 'vue';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
   IonList, IonItem, IonLabel, IonNote, IonSpinner, IonRefresher, IonRefresherContent,
+  IonSearchbar,
 } from '@ionic/vue';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -57,6 +68,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const loading = ref(false);
 const data = ref<BalanceSheetData | null>(null);
+const searchQuery = ref('');
 
 const chartData = computed(() => ({
   labels: ['Assets', 'Liabilities', 'Equity'],
@@ -71,7 +83,9 @@ const chartOptions = { responsive: true, plugins: { legend: { position: 'bottom'
 async function load() {
   loading.value = true;
   try {
-    data.value = await fetchBalanceSheet();
+    data.value = await fetchBalanceSheet({
+      search: searchQuery.value || undefined,
+    });
   } catch { /* offline */ }
   finally { loading.value = false; }
 }
