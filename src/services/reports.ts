@@ -37,6 +37,33 @@ export interface AccountRegisterEntry {
   balance_denom: number;
 }
 
+export interface TaxSummaryTax {
+  tax_id: number;
+  tax_name: string;
+  tax_rate: number;
+  tax_type: string;
+  collected: number;
+  collected_formatted: string;
+  paid: number;
+  paid_formatted: string;
+  net: number;
+  net_formatted: string;
+}
+
+export interface TaxSummaryData {
+  taxes: TaxSummaryTax[];
+  totals: {
+    collected: number;
+    collected_formatted: string;
+    paid: number;
+    paid_formatted: string;
+    net: number;
+    net_formatted: string;
+  };
+  period: { start_date: string; end_date: string };
+  tax_count: number;
+}
+
 export interface ReportFilters {
   search?: string;
   date_preset?: string;
@@ -62,6 +89,13 @@ export async function fetchCashFlow(filters: ReportFilters = {}): Promise<CashFl
 
 export async function fetchTrialBalance(filters: ReportFilters = {}): Promise<TrialBalanceRow[]> {
   const response = await api.get('/reports/trial-balance', { params: filters });
+  return response.data.data ?? response.data;
+}
+
+export async function fetchTaxSummary(
+  filters: { start_date?: string; end_date?: string } = {},
+): Promise<TaxSummaryData> {
+  const response = await api.get('/tax-summary', { params: filters });
   return response.data.data ?? response.data;
 }
 

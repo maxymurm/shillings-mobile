@@ -38,6 +38,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'reports/cash-flow', component: () => import('@/views/reports/CashFlowChartPage.vue') },
       { path: 'reports/trial-balance', component: () => import('@/views/reports/TrialBalanceTablePage.vue') },
       { path: 'reports/account-register', component: () => import('@/views/reports/AccountRegisterPage.vue') },
+      { path: 'reports/tax-summary', component: () => import('@/views/reports/TaxSummaryPage.vue') },
       { path: 'settings', component: () => import('@/views/settings/SettingsPage.vue') },
     ],
   },

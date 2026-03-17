@@ -42,6 +42,13 @@
             <p>Transaction history by account</p>
           </ion-label>
         </ion-item>
+        <ion-item button detail router-link="/tabs/reports/tax-summary">
+          <ion-icon :icon="receiptOutline" slot="start" />
+          <ion-label>
+            <h3>Tax Summary</h3>
+            <p>Tax collected, paid & net payable</p>
+          </ion-label>
+        </ion-item>
       </ion-list>
     </ion-content>
   </ion-page>
@@ -52,5 +59,5 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
   IonIcon, IonLabel,
 } from '@ionic/vue';
-import { documentTextOutline, pieChartOutline, trendingUpOutline, swapHorizontalOutline, listOutline } from 'ionicons/icons';
+import { documentTextOutline, pieChartOutline, trendingUpOutline, swapHorizontalOutline, listOutline, receiptOutline } from 'ionicons/icons';
 </script>
