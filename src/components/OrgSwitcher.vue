@@ -36,7 +36,7 @@ const abbreviation = computed(() => {
 });
 
 const actionButtons = computed(() => {
-  const buttons = authStore.companies
+  const buttons: Array<{ text: string; handler?: () => void; role?: string }> = authStore.companies
     .filter(c => c.id !== authStore.selectedCompanyId)
     .map(c => ({
       text: c.name,

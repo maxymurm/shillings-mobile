@@ -30,6 +30,7 @@ export interface Account {
   placeholder: boolean;
   hidden: boolean;
   account_type?: AccountType;
+  currency?: Currency;
   children?: Account[];
   balance_num?: number;
   balance_denom?: number;

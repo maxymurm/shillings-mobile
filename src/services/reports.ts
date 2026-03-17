@@ -29,12 +29,20 @@ export interface TrialBalanceRow {
 export interface AccountRegisterEntry {
   id: number;
   date: string;
+  num?: string;
   description: string;
+  memo?: string;
   amount_num: number;
   amount_denom: number;
   action: 'DEBIT' | 'CREDIT';
   balance_num: number;
   balance_denom: number;
+  reconciled_state?: 'n' | 'c' | 'y';
+  is_posted?: boolean;
+  is_void?: boolean;
+  transfer_account?: string;
+  transfer_account_id?: number;
+  split_id?: number;
 }
 
 export interface TaxSummaryTax {
@@ -102,10 +110,58 @@ export async function fetchTaxSummary(
 export async function fetchAccountRegister(
   accountId: number,
   page = 1,
-  filters: { search?: string; start_date?: string; end_date?: string } = {},
+  filters: {
+    search?: string;
+    start_date?: string;
+    end_date?: string;
+    unreconciled_only?: boolean;
+    sort_column?: string;
+    sort_dir?: string;
+  } = {},
 ): Promise<AccountRegisterEntry[]> {
   const response = await api.get(`/accounts/${accountId}/transactions`, {
     params: { page, ...filters },
   });
   return response.data.data ?? response.data;
+}
+
+export async function toggleReconcileState(
+  transactionId: number,
+  splitId: number,
+  newState: 'n' | 'c' | 'y',
+): Promise<void> {
+  await api.post(`/transactions/${transactionId}/reconcile`, {
+    splits: [{ id: splitId, reconciled_state: newState }],
+  });
+}
+
+export async function voidTransaction(
+  transactionId: number,
+  reason: string,
+): Promise<void> {
+  await api.post(`/transactions/${transactionId}/void`, { reason });
+}
+
+export async function duplicateTransaction(
+  transactionId: number,
+): Promise<{ transaction: any }> {
+  const response = await api.post(`/transactions/${transactionId}/duplicate`);
+  return response.data;
+}
+
+export async function deleteTransaction(
+  transactionId: number,
+): Promise<void> {
+  await api.delete(`/transactions/${transactionId}`);
+}
+
+export async function exportAccountRegisterCsv(
+  accountId: number,
+  filters: { search?: string; start_date?: string; end_date?: string } = {},
+): Promise<Blob> {
+  const response = await api.get(`/accounts/${accountId}/transactions/export`, {
+    params: filters,
+    responseType: 'blob',
+  });
+  return response.data;
 }
